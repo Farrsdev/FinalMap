@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "413702513242",
+    "project_id": "mapusk",
+    "storage_bucket": "mapusk.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:413702513242:android:2383a801dce9bda69b6e63",
+        "android_client_info": {
+          "package_name": "com.project.finalmap"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDd_3QcsKAe-6p54MIatE0O8cjZ0SFbQNk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
