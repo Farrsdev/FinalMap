@@ -6,7 +6,6 @@ import android.content.pm.PackageManager
 import android.location.Location
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.Discouraged
 import androidx.annotation.RequiresPermission
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
