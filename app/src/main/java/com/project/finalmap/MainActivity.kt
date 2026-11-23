@@ -28,7 +28,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             FinalMapTheme {
-
+                MainScreen()
             }
         }
     }
@@ -65,9 +65,15 @@ fun MainScreen(modifier: Modifier = Modifier) {
             modifier = Modifier.fillMaxSize().padding(p)
         ){
             when(currentTab){
-                BottomNavItem.HOME -> TODO()
-                BottomNavItem.MAP -> TODO()
-                BottomNavItem.PROFILE -> TODO()
+                BottomNavItem.HOME -> {
+                    Text("Home")
+                }
+                BottomNavItem.MAP -> {
+                    Text("Map")
+                }
+                BottomNavItem.PROFILE -> {
+                    Text("Profile")
+                }
             }
         }
     }
