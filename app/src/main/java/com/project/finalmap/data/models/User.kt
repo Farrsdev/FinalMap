@@ -6,5 +6,6 @@ data class User(
     val nama:String = "",
     val phone:String = "",
     val photo:String? = null,
+   // val password: String = "",
     val createdAt:Long = System.currentTimeMillis()
 )

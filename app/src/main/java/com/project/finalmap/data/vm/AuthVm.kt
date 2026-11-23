@@ -23,22 +23,26 @@ class AuthVm : ViewModel(){
     var isLoading by mutableStateOf(false)
         private set
 
-    fun register(user: User, password:String){
+    fun register(user: User, password:String, onSuccess: () -> Unit){
         isLoading = true
         repo.register(user, password){ success, msg ->
+            isLoading = false
             if(success){
                 successMsg = msg
+                onSuccess()
             } else{
                 errorMsg = msg
             }
         }
     }
 
-    fun login(username:String, password:String){
+    fun login(username:String, password:String, onSuccess: () -> Unit){
         isLoading = true
         repo.login(username, password){ success, msg ->
+            isLoading = false
             if(success){
                 successMsg = msg
+                onSuccess()
             } else{
                 errorMsg = msg
             }
@@ -57,5 +61,33 @@ class AuthVm : ViewModel(){
                 errorMsg = msg
             }
         }
+    }
+
+    fun updateProfile(nama: String, phone: String, onDone: () -> Unit){
+        isLoading = true
+        repo.updateProfile(nama, phone){ success, msg ->
+            isLoading = false
+            if(success){
+                _users.value = _users.value?.copy(nama = nama.trim(), phone = phone.trim())
+                successMsg = msg
+                onDone()
+            } else{
+                errorMsg = msg
+            }
+        }
+    }
+
+    fun showError(msg: String){
+        errorMsg = msg
+    }
+
+    fun clearMsg(){
+        successMsg = null
+        errorMsg = null
+    }
+
+    fun logout(){
+        repo.logout()
+        _users.value = null
     }
 }

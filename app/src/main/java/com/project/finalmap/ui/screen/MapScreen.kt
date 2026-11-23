@@ -96,7 +96,7 @@ fun MapScreen(modifier: Modifier = Modifier) {
 
             map.setStyle(
                 Style.Builder().fromUri(
-                    "https://api.maptiler.com/maps/base-v4/style.json?key=${BuildConfig.MAPTILER_API_KEY}"
+                    "https://api.maptiler.com/maps/streets-v2/style.json?key=${BuildConfig.MAPTILER_API_KEY}"
                 )
             ) { style ->
                 if (hasPermission) {

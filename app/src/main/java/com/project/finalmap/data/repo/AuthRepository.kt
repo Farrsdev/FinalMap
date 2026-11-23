@@ -7,6 +7,7 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.firestore.firestore
 import com.project.finalmap.data.models.User
+import com.project.finalmap.util.security.Helper
 
 class AuthRepository {
     val auth = FirebaseAuth.getInstance()
@@ -33,6 +34,7 @@ class AuthRepository {
                                     username = user.username.trim(),
                                     nama = user.nama.trim(),
                                     phone = user.phone.trim(),
+                                    //password = Helper.hashPassword(password),
                                     createdAt = System.currentTimeMillis()
                                 )
 
@@ -56,6 +58,7 @@ class AuthRepository {
                     }
                 }
             }
+            .addOnFailureListener { onResult(false, "Gagal memeriksa username: ${it.message}") }
     }
 
     fun login(username:String, password: String, onResult: (Boolean, String) -> Unit){
@@ -102,6 +105,16 @@ class AuthRepository {
                 onResult(null, "Gagal memuat profil: ${it.message}")
             }
     }
+    fun updateProfile(nama: String, phone: String, onResult: (Boolean, String) -> Unit){
+        val uid = auth.currentUser?.uid ?: return onResult(false, "Sesi login tidak ditemukan!")
+
+        db.collection("users")
+            .document(uid)
+            .update(mapOf("nama" to nama.trim(), "phone" to phone.trim()))
+            .addOnSuccessListener { onResult(true, "Profil berhasil diperbarui!") }
+            .addOnFailureListener { onResult(false, "Gagal memperbarui profil: ${it.message}") }
+    }
+
     fun logout(){
         auth.signOut()
     }

@@ -1,139 +1,111 @@
 package com.project.finalmap.ui.screen
 
-import android.view.RoundedCorner
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material.icons.filled.AlternateEmail
+import androidx.compose.material.icons.filled.Badge
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.PersonAdd
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.project.finalmap.data.models.User
+import com.project.finalmap.data.vm.AuthVm
+import com.project.finalmap.ui.components.AppTextField
+import com.project.finalmap.ui.components.PhoneField
+import com.project.finalmap.util.security.Helper
+import com.project.finalmap.util.security.PhoneUtils
 
 @Composable
-fun RegisterScreen(modifier: Modifier = Modifier) {
+fun RegisterScreen(
+    onRegisterSuccess: () -> Unit,
+    onLoginClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    vm: AuthVm = viewModel()
+) {
     var username by remember { mutableStateOf("") }
     var name by remember { mutableStateOf("") }
+    var country by remember { mutableStateOf(PhoneUtils.defaultCountry()) }
     var phone by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
-    var showPassword by remember { mutableStateOf(false) }
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Center
+            .safeDrawingPadding()
+            .imePadding()
+            .verticalScroll(rememberScrollState())
+            .padding(24.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterVertically),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("Register", fontSize = 24.sp)
-        OutlinedTextField(
-            value = username,
-            onValueChange = {username = it},
-            label = {
-                Text("Username")
-            },
-            modifier = Modifier.fillMaxWidth()
+        Icon(
+            Icons.Default.PersonAdd, null,
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.size(64.dp)
         )
+        Text("Create Account", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+        Text(
+            "Isi data diri untuk mendaftar",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Spacer(Modifier.height(8.dp))
 
-        OutlinedTextField(
-            value = name,
-            onValueChange = {name = it},
-            label = {
-                Text("Name")
-            },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        OutlinedTextField(
-            value = phone,
-            onValueChange = {phone = it},
-            label = {
-                Text("Phone")
-            },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        OutlinedTextField(
-            value = password,
-            onValueChange = {password = it},
-            label = {
-                Text("Password")
-            },
-            visualTransformation = if(!showPassword) PasswordVisualTransformation() else VisualTransformation.None  ,
-            trailingIcon = {
-                IconButton(
-                    onClick = {
-                        showPassword=!showPassword
-                    }
-                ) {
-                    Icon(if(showPassword) Icons.Default.VisibilityOff else Icons.Default.Visibility, null)
-                }
-            },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        OutlinedTextField(
-            value = confirmPassword,
-            onValueChange = {confirmPassword = it},
-            label = {
-                Text("Confirm Password")
-            },
-            visualTransformation = if(!showPassword) PasswordVisualTransformation() else VisualTransformation.None  ,
-            trailingIcon = {
-                IconButton(
-                    onClick = {
-                        showPassword=!showPassword
-                    }
-                ) {
-                    Icon(if(showPassword) Icons.Default.VisibilityOff else Icons.Default.Visibility, null)
-                }
-            },
-            modifier = Modifier.fillMaxWidth()
-        )
+        AppTextField(username, { username = it }, "Username", Icons.Default.AlternateEmail)
+        AppTextField(name, { name = it }, "Name", Icons.Default.Badge)
+        PhoneField(country, { country = it }, phone, { phone = it })
+        AppTextField(password, { password = it }, "Password", Icons.Default.Lock, isPassword = true)
+        AppTextField(confirmPassword, { confirmPassword = it }, "Confirm Password", Icons.Default.Lock, isPassword = true)
 
         Button(
             onClick = {
-
+                val error = Helper.checkValidationRegister(username, name, phone, country, password, confirmPassword)
+                if (error != null) vm.showError(error)
+                else vm.register(
+                    User(username = username, nama = name, phone = PhoneUtils.format(phone, country)),
+                    password,
+                    onRegisterSuccess
+                )
             },
-            shape = RoundedCornerShape(10.dp),
-            modifier = Modifier.fillMaxWidth().padding(top = 10.dp)
+            enabled = !vm.isLoading,
+            shape = RoundedCornerShape(12.dp),
+            modifier = Modifier.fillMaxWidth().padding(top = 4.dp).height(50.dp)
         ) {
-            Text("Daftar")
+            if (vm.isLoading) CircularProgressIndicator(Modifier.size(22.dp), strokeWidth = 2.dp)
+            else Text("Daftar")
         }
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(top=10.dp),
-            horizontalArrangement = Arrangement.Center
-        ) {
+
+        Row(verticalAlignment = Alignment.CenterVertically) {
             Text("Already have account?")
-            Text("Login", color = Color.Blue)
+            TextButton(onClick = onLoginClick) { Text("Login") }
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun Prev() {
-    RegisterScreen()
 }

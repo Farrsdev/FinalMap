@@ -12,8 +12,9 @@ object PhoneUtils {
         util = PhoneNumberUtil.createInstance(context)
     }
 
-    val countries: List<Country>
-        get() = util.supportedRegions.map { iso ->
+    // lazy: dihitung sekali setelah initialize(), bukan tiap akses
+    val countries: List<Country> by lazy {
+        util.supportedRegions.map { iso ->
             Country(
                 nama = Locale("", iso).displayCountry,
                 iso = iso,
@@ -23,6 +24,7 @@ object PhoneUtils {
                 }.joinToString("")
             )
         }.sortedBy { it.nama }
+    }
 
     fun isValid(phone: String, country: Country) : Boolean{
         return runCatching {
@@ -40,6 +42,17 @@ object PhoneUtils {
                 PhoneNumberUtil.PhoneNumberFormat.E164
             )
         }.getOrDefault("")
+    }
+
+    fun defaultCountry(): Country = countries.first { it.iso == "ID" }
+
+    // Pecah nomor E164 tersimpan (+62812...) jadi negara + nomor nasional untuk form edit
+    fun split(e164: String): Pair<Country, String> {
+        return runCatching {
+            val number = util.parse(e164, null)
+            val iso = util.getRegionCodeForNumber(number)
+            countries.first { it.iso == iso } to number.nationalNumber.toString()
+        }.getOrDefault(defaultCountry() to "")
     }
 
 }
