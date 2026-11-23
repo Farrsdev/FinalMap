@@ -19,13 +19,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.project.finalmap.ui.screen.MapScreen
 import com.project.finalmap.ui.theme.FinalMapTheme
 import com.project.finalmap.util.nav.BottomNavItem
+import org.maplibre.android.MapLibre
+import org.maplibre.android.maps.MapLibreMap
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        MapLibre.getInstance(this)
         setContent {
             FinalMapTheme {
                 MainScreen()
@@ -69,7 +73,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
                     Text("Home")
                 }
                 BottomNavItem.MAP -> {
-                    Text("Map")
+                    MapScreen()
                 }
                 BottomNavItem.PROFILE -> {
                     Text("Profile")

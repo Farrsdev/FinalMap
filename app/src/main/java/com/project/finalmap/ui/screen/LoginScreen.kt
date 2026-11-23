@@ -81,9 +81,9 @@ fun LoginScreen(modifier: Modifier = Modifier) {
         }
 
         Row(modifier = Modifier.fillMaxWidth().padding(top = 10.dp), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
-            Text("Belum ada akun?")
+            Text("Don't have any account?")
             Spacer(Modifier.width(5.dp))
-            Text("Daftar", color = Color.Blue)
+            Text("Register", color = Color.Blue)
         }
     }
 }
