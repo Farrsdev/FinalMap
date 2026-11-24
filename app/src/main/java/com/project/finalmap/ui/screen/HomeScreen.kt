@@ -51,7 +51,11 @@ fun HomeScreen(modifier: Modifier = Modifier, vm: AuthVm = viewModel()) {
         }
 
         Card(shape = RoundedCornerShape(16.dp), modifier = Modifier.fillMaxWidth()) {
-            Column(Modifier.padding(16.dp), horizontalAlignment = Alignment.Start) {
+            Column(
+                Modifier
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.Start
+            ) {
                 Icon(Icons.Default.Map, null, tint = colors.primary)
                 Text("Jelajahi peta", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(top = 8.dp))
                 Text(

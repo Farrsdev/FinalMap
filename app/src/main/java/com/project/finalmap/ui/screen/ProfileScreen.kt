@@ -23,6 +23,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -39,6 +40,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -88,7 +90,10 @@ fun ProfileScreen(onLogout: () -> Unit, modifier: Modifier = Modifier, vm: AuthV
         val u = user ?: return@Column
         if (editing) EditProfileCard(u, vm, onClose = { editing = false })
         else {
-            Card(shape = RoundedCornerShape(16.dp), modifier = Modifier.fillMaxWidth()) {
+            Card(
+                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
                 Column(Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
                     InfoRow(Icons.Default.AlternateEmail, "Username", u.username)
                     HorizontalDivider()
@@ -102,11 +107,12 @@ fun ProfileScreen(onLogout: () -> Unit, modifier: Modifier = Modifier, vm: AuthV
                     editing = true
                 },
                 shape = RoundedCornerShape(12.dp),
-                modifier = Modifier.fillMaxWidth().height(50.dp)
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Icon(Icons.Default.Edit, null)
                 Text("Edit Profile", Modifier.padding(start = 8.dp))
             }
+
             OutlinedButton(
                 onClick = {
                     showAlertLogout = true
@@ -155,7 +161,12 @@ fun ProfileScreen(onLogout: () -> Unit, modifier: Modifier = Modifier, vm: AuthV
 
 @Composable
 private fun InfoRow(icon: ImageVector, label: String, value: String) {
-    Row(Modifier.fillMaxWidth().padding(vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .padding(vertical = 12.dp)
+        , verticalAlignment = Alignment.CenterVertically)
+    {
         Icon(icon, null, tint = MaterialTheme.colorScheme.primary)
         Column(Modifier.padding(start = 16.dp)) {
             Text(label, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -193,7 +204,10 @@ private fun EditProfileCard(user: User, vm: AuthVm, onClose: () -> Unit) {
                 { phone = it }
             )
 
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
                 TextButton(onClick = onClose) { Text("Batal") }
                 Button(
                     onClick = {

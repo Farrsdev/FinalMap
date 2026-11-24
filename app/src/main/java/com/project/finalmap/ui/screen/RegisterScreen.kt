@@ -79,11 +79,40 @@ fun RegisterScreen(
         )
         Spacer(Modifier.height(8.dp))
 
-        AppTextField(username, { username = it }, "Username", Icons.Default.AlternateEmail)
-        AppTextField(name, { name = it }, "Name", Icons.Default.Badge)
-        PhoneField(country, { country = it }, phone, { phone = it })
-        AppTextField(password, { password = it }, "Password", Icons.Default.Lock, isPassword = true)
-        AppTextField(confirmPassword, { confirmPassword = it }, "Confirm Password", Icons.Default.Lock, isPassword = true)
+        AppTextField(
+            username,
+            { username = it },
+            "Username",
+            Icons.Default.AlternateEmail
+        )
+
+        AppTextField(
+            name,
+            { name = it },
+            "Name",
+            Icons.Default.Badge
+        )
+
+        PhoneField(
+            country,
+            { country = it },
+            phone,
+            { phone = it }
+        )
+        AppTextField(
+            password,
+            { password = it },
+            "Password",
+            Icons.Default.Lock,
+            isPassword = true
+        )
+        AppTextField(
+            confirmPassword,
+            { confirmPassword = it },
+            "Confirm Password",
+            Icons.Default.Lock,
+            isPassword = true
+        )
 
         Button(
             onClick = {
