@@ -7,8 +7,23 @@ import android.location.Location
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresPermission
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.MyLocation
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -16,8 +31,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import com.project.finalmap.BuildConfig
@@ -34,6 +51,7 @@ import org.maplibre.android.maps.Style
 
 @Composable
 fun MapScreen(modifier: Modifier = Modifier) {
+    var isExpanded by remember { mutableStateOf(false) }
     val context = LocalContext.current
     var hasPermission by remember {
         mutableStateOf(
@@ -115,9 +133,53 @@ fun MapScreen(modifier: Modifier = Modifier) {
             },
             modifier = Modifier.fillMaxSize()
         )
+        Column(
+            modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp),
+            horizontalAlignment = Alignment.End,
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            AnimatedVisibility(
+                visible = isExpanded,
+                enter = fadeIn() + slideInVertically { it/2 },
+                exit = fadeOut() + slideOutVertically { it/2 }
+            ) {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(10.dp),
+                    horizontalAlignment = Alignment.End
+                ) {
+                    SmallFloatingActionButton(
+                        onClick = {
+                            val comp = mapLibreMap?.locationComponent
+                            if (comp != null && comp.isLocationComponentActivated) {
+                                loc = comp.lastKnownLocation
+                                loc?.let {
+                                    mapLibreMap?.animateCamera(
+                                        CameraUpdateFactory.newLatLngZoom(
+                                            LatLng(it.latitude, it.longitude),
+                                            16.0
+                                        ),
+                                        800
+                                    )
+                                }
+                            }
+                        }
+                    ) {
+                        Icon(Icons.Default.MyLocation, null)
+                    }
+                }
+            }
+
+            FloatingActionButton(
+                onClick = { isExpanded = !isExpanded }
+            ) {
+                Icon(
+                    imageVector = if (isExpanded) Icons.Default.Close else Icons.Default.Menu,
+                    contentDescription = "Menu Map"
+                )
+            }
+        }
     }
 }
-
 
 @RequiresPermission(allOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
 fun enableLocationComponent(context: Context, mapLibreMap: MapLibreMap, style: Style){

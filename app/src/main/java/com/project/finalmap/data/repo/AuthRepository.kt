@@ -2,6 +2,7 @@ package com.project.finalmap.data.repo
 
 import com.google.firebase.Firebase
 import com.google.firebase.FirebaseNetworkException
+import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
@@ -113,6 +114,45 @@ class AuthRepository {
             .update(mapOf("nama" to nama.trim(), "phone" to phone.trim()))
             .addOnSuccessListener { onResult(true, "Profil berhasil diperbarui!") }
             .addOnFailureListener { onResult(false, "Gagal memperbarui profil: ${it.message}") }
+    }
+
+    fun deleteProfile(password:String, onResult: (Boolean, String) -> Unit){
+        val usr = auth.currentUser
+        if(usr == null){
+            onResult(false, "Pengguna tidak ditemukan atau belum login")
+            return
+        }
+
+        val email = usr.email
+        if(email.isNullOrEmpty()){
+            onResult(false, "Email pengguna tidak valid")
+            return
+        }
+        val cred = EmailAuthProvider.getCredential(email, password)
+
+        usr.reauthenticate(cred).addOnCompleteListener { reauthTask ->
+            if(reauthTask.isSuccessful){
+                val uid = usr.uid
+                db.collection("users").document(uid)
+                    .delete()
+                    .addOnSuccessListener {
+                        usr.delete().addOnCompleteListener { authTask ->
+                            if (authTask.isSuccessful) {
+                                onResult(true, "Akun berhasil dihapus")
+                            } else {
+                                val errorMsg = authTask.exception?.message ?: "Gagal menghapus akun"
+                                onResult(false, errorMsg)
+                            }
+                        }
+                    }
+                    .addOnFailureListener { e ->
+                        onResult(false, "Gagal menghapus data profil: ${e.message}")
+                    }
+            } else{
+                onResult(false, "Password salah")
+            }
+        }
+
     }
 
     fun logout(){

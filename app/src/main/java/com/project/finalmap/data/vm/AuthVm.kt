@@ -77,6 +77,19 @@ class AuthVm : ViewModel(){
         }
     }
 
+    fun deleteProfile(password:String, onDone: () -> Unit){
+        isLoading = true
+        repo.deleteProfile(password){ success, msg ->
+            isLoading = false
+            if(success){
+                _users.value = null
+                successMsg = msg
+                onDone.invoke()
+            } else{
+                errorMsg = msg
+            }
+        }
+    }
     fun showError(msg: String){
         errorMsg = msg
     }

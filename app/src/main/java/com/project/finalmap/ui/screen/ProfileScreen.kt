@@ -1,5 +1,6 @@
 package com.project.finalmap.ui.screen
 
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -29,6 +30,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -43,8 +45,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
@@ -61,6 +65,9 @@ fun ProfileScreen(onLogout: () -> Unit, modifier: Modifier = Modifier, vm: AuthV
     val user by vm.users.collectAsState()
     var editing by remember { mutableStateOf(false) }
     var showAlertLogout by remember { mutableStateOf(false) }
+    var showAlertDelete by remember { mutableStateOf(false) }
+    var confirmPw by remember { mutableStateOf("") }
+    val context = LocalContext.current
 
     Column(
         modifier = modifier
@@ -115,6 +122,20 @@ fun ProfileScreen(onLogout: () -> Unit, modifier: Modifier = Modifier, vm: AuthV
 
             OutlinedButton(
                 onClick = {
+                    showAlertDelete = true
+                },
+                colors = ButtonDefaults.buttonColors(
+                    contentColor = Color.Red,
+                    containerColor = Color.Transparent
+                ),
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+            ) {
+                Text("Hapus Akun")
+            }
+
+            OutlinedButton(
+                onClick = {
                     showAlertLogout = true
                 },
                 shape = RoundedCornerShape(12.dp),
@@ -124,6 +145,57 @@ fun ProfileScreen(onLogout: () -> Unit, modifier: Modifier = Modifier, vm: AuthV
                 Text("Logout", Modifier.padding(start = 8.dp))
             }
         }
+    }
+
+    if(showAlertDelete){
+        AlertDialog(
+            onDismissRequest = {
+                showAlertDelete = false
+            },
+            text = {
+                OutlinedTextField(
+                    value = confirmPw,
+                    onValueChange = {confirmPw = it},
+                    label = {
+                        Text("Konfirmasi Password")
+                    },
+                    placeholder = {},
+                    visualTransformation = PasswordVisualTransformation(),
+                    modifier = Modifier.fillMaxWidth()
+                )
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        showAlertDelete = false
+                    }
+                ) {
+                    Text("Batal")
+                }
+            },
+            confirmButton = {
+                OutlinedButton(
+                    onClick = {
+                        if (confirmPw.isBlank()) {
+                            Toast.makeText(context, "Password tidak boleh kosong!", Toast.LENGTH_SHORT).show()
+                            return@OutlinedButton
+                        }
+
+                        showAlertDelete = false
+                        vm.deleteProfile(
+                            confirmPw,
+                            onDone = {
+                                Toast.makeText(context, "Akun berhasil dihapus", Toast.LENGTH_SHORT).show()
+                                vm.logout()
+                                onLogout()
+                            },
+                        )
+                    }
+                ) {
+                    Text("Konfirmasi")
+                }
+            }
+        )
     }
 
     if(showAlertLogout){
