@@ -51,7 +51,6 @@ class MainActivity : ComponentActivity() {
 }
 
 private enum class AuthPage { LOGIN, REGISTER, MAIN }
-
 @Composable
 fun AppRoot(vm: AuthVm = viewModel()) {
     val context = LocalContext.current

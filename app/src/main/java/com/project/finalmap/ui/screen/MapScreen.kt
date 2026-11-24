@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.location.Location
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.NonNull
 import androidx.annotation.RequiresPermission
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -180,7 +181,6 @@ fun MapScreen(modifier: Modifier = Modifier) {
         }
     }
 }
-
 @RequiresPermission(allOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
 fun enableLocationComponent(context: Context, mapLibreMap: MapLibreMap, style: Style){
     val locationComp = mapLibreMap.locationComponent
