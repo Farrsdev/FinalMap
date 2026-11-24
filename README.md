@@ -1,1 +1,1 @@
-![Banner Proyek](ss_usk/login_screen.png)
+<img src="ss_usk/login_screen.png" alt="Login Screen" width="400" />.
